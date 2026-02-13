@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine</title>
+
+<style>
+body{
+    margin:0;
+    background:black;
+    height:100vh;
+    overflow:hidden;
+    font-family:Segoe UI;
+}
+
+/* HEART */
+.heart{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) rotate(-45deg) scale(0);
+    width:120px;
+    height:120px;
+    background:#ff4d88;
+    animation:grow 6s forwards;
+    box-shadow:0 0 120px #ff4d88;
+}
+
+.heart::before,
+.heart::after{
+    content:'';
+    position:absolute;
+    width:120px;
+    height:120px;
+    background:#ff4d88;
+    border-radius:50%;
+}
+
+.heart::before{ top:-60px; left:0; }
+.heart::after{ left:60px; top:0; }
+
+@keyframes grow{
+    0%{ transform:translate(-50%,-50%) rotate(-45deg) scale(0);}
+    80%{ transform:translate(-50%,-50%) rotate(-45deg) scale(7);}
+    100%{
+        transform:translate(-50%,-50%) rotate(-45deg) scale(7);
+        opacity:0;
+    }
+}
+
+.text{
+    position:absolute;
+    top:50%;
+    width:100%;
+    text-align:center;
+    font-size:60px;
+    color:white;
+    text-shadow:
+    0 0 4px #ff1a4d,
+    0 0 10px #ff1a4d,
+    0 0 25px #ff1a4d;
+    transform:translateY(-50%);
+    opacity:1;
+}
+
+
+.star{
+    position:absolute;
+    width:2px;
+    height:100px;
+    background:linear-gradient(#ffd6e7, transparent);
+    animation:fall linear infinite;
+}
+
+@keyframes fall{
+    from{ transform:translateY(-100px); }
+    to{ transform:translateY(110vh); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="heart" id="heart"></div>
+<div class="text" id="text"></div>
+
+<script>
+
+// SAO BĂNG TẠO LIÊN TỤC
+function startStars(){
+    let starInterval=setInterval(()=>{
+        for(let i=0;i<5;i++){
+            let star=document.createElement("div");
+            star.className="star";
+            star.style.left=Math.random()*window.innerWidth+"px";
+            star.style.animationDuration=(Math.random()*2+2)+"s";
+            document.body.appendChild(star);
+        }
+    },100);
+
+    setTimeout(()=>{
+        clearInterval(starInterval);
+        showNextMessage(); 
+    },3000);
+}
+
+let messages=[
+"Chúc Ty Valentine dui dẻ nhó 💗🎀✨",
+"Mong Ty ngày nào cũng cười hí hí cho Bin nghe 😊🌸",
+"Cảm ơn Ty vì đã xuất hiện 🌈🧸",
+"Bin thích Ty dữ lắm lun á 🐣💞",
+"Nho Ty nhìu nhìu ỉa hông ra luôn 🥺🍭",
+"Có chuyện gì nhớ kể cho Bin biết nhe 💌",
+"Bin lun ở đây đợi Ty nè 🐻🌟",
+"Ty nhớ luôn dễ thương như bây giờ đó 🌸🍬",
+"Ai lớp diu bibi 🧁💗"
+];
+
+let finalMessage="Tục tưng bé bỏng của Bin hehe 🐥🎈";
+
+
+let text=document.getElementById("text");
+let index=0;
+
+function typeWriter(message,i,callback,shouldFade=true){
+    if(i<message.length){
+        text.innerHTML += message.charAt(i);
+        setTimeout(()=>{
+            typeWriter(message,i+1,callback,shouldFade);
+        },70);
+    }else{
+        if(shouldFade){
+            setTimeout(()=>{
+                fadeOut(callback);
+            },2000);
+        }
+    }
+}
+
+
+function fadeOut(callback){
+    let op=1;
+    function fade(){
+        if(op<=0){
+            callback();
+            return;
+        }
+        text.style.opacity=op;
+        op-=0.03;
+        setTimeout(fade,40);
+    }
+    fade();
+}
+
+function showNextMessage(){
+    if(index<messages.length){
+        text.innerHTML="";
+        text.style.opacity=1;
+        typeWriter(messages[index],0,()=>{
+            index++;
+            showNextMessage();
+        },true);
+    }
+    else{
+        text.innerHTML="";
+        text.style.opacity=1;
+        typeWriter(finalMessage,0,()=>{},false); 
+    }
+}
+
+setTimeout(()=>{
+    document.getElementById("heart").style.display="none";
+    startStars();
+},6000);
+
+</script>
+
+</body>
+</html>
