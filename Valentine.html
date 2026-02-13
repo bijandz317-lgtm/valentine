@@ -23,7 +23,7 @@ body{
     width:120px;
     height:120px;
     background:#ff4d88;
-    animation:grow 6s forwards;
+    animation:grow 7s forwards;
     box-shadow:0 0 120px #ff4d88;
 }
 
@@ -42,28 +42,37 @@ body{
 
 @keyframes grow{
     0%{ transform:translate(-50%,-50%) rotate(-45deg) scale(0);}
-    80%{ transform:translate(-50%,-50%) rotate(-45deg) scale(7);}
+    80%{ transform:translate(-50%,-50%) rotate(-45deg) scale(9);}
     100%{
-        transform:translate(-50%,-50%) rotate(-45deg) scale(7);
+        transform:translate(-50%,-50%) rotate(-45deg) scale(9);
         opacity:0;
     }
 }
 
+/* TEXT */
 .text{
     position:absolute;
     top:50%;
-    width:100%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:90%;
     text-align:center;
-    font-size:60px;
     color:white;
+    font-size:6vw;
     text-shadow:
-    0 0 4px #ff1a4d,
-    0 0 10px #ff1a4d,
-    0 0 25px #ff1a4d;
-    transform:translateY(-50%);
+    0 0 5px red,
+    0 0 15px red,
+    0 0 30px red;
     opacity:1;
 }
 
+@media (orientation: landscape){
+    .text{
+        font-size:8vw;
+        padding:0 20px;
+        word-break:break-word;
+    }
+}
 
 .star{
     position:absolute;
@@ -71,6 +80,40 @@ body{
     height:100px;
     background:linear-gradient(#ffd6e7, transparent);
     animation:fall linear infinite;
+}
+
+.float-heart{
+    position:absolute;
+    width:20px;
+    height:20px;
+    background:#ff4d88;
+    transform:rotate(-45deg);
+    animation:floatUp 5s linear forwards;
+    opacity:0.8;
+}
+
+.float-heart::before,
+.float-heart::after{
+    content:'';
+    position:absolute;
+    width:20px;
+    height:20px;
+    background:#ff4d88;
+    border-radius:50%;
+}
+
+.float-heart::before{ top:-10px; left:0; }
+.float-heart::after{ left:10px; top:0; }
+
+@keyframes floatUp{
+    from{
+        transform:translateY(0) rotate(-45deg) scale(0.5);
+        opacity:1;
+    }
+    to{
+        transform:translateY(-120vh) rotate(-45deg) scale(1.5);
+        opacity:0;
+    }
 }
 
 @keyframes fall{
@@ -87,57 +130,74 @@ body{
 
 <script>
 
-// SAO BĂNG TẠO LIÊN TỤC
 function startStars(){
-    let starInterval=setInterval(()=>{
-        for(let i=0;i<5;i++){
-            let star=document.createElement("div");
-            star.className="star";
-            star.style.left=Math.random()*window.innerWidth+"px";
-            star.style.animationDuration=(Math.random()*2+2)+"s";
-            document.body.appendChild(star);
-        }
-    },100);
+    setInterval(()=>{
 
-    setTimeout(()=>{
-        clearInterval(starInterval);
-        showNextMessage(); 
-    },3000);
+        let star=document.createElement("div");
+        star.className="star";
+
+        star.style.left=Math.random()*window.innerWidth+"px";
+        star.style.animationDuration=(Math.random()*3+3)+"s";
+
+        document.body.appendChild(star);
+
+        setTimeout(()=>{
+            star.remove();
+        },6000);
+
+    },300);
 }
+function startHearts(){
+    setInterval(()=>{
+
+        let heart=document.createElement("div");
+        heart.className="float-heart";
+
+        heart.style.left=Math.random()*window.innerWidth+"px";
+        heart.style.bottom="-20px";
+        heart.style.animationDuration=(Math.random()*2+3)+"s";
+
+        document.body.appendChild(heart);
+
+        setTimeout(()=>{
+            heart.remove();
+        },5000);
+
+    },600); 
+}
+
 
 let messages=[
 "Chúc Ty Valentine dui dẻ nhó 💗🎀✨",
-"Mong Ty ngày nào cũng cười hí hí cho Bin nghe 😊🌸",
+"Mong Ty ngày nào cũng cười hí hí 😊🌸",
 "Cảm ơn Ty vì đã xuất hiện 🌈🧸",
 "Bin thích Ty dữ lắm lun á 🐣💞",
-"Nho Ty nhìu nhìu ỉa hông ra luôn 🥺🍭",
+"Nho Ty nhìu nhìu 🥺🍭",
 "Có chuyện gì nhớ kể cho Bin biết nhe 💌",
 "Bin lun ở đây đợi Ty nè 🐻🌟",
 "Ty nhớ luôn dễ thương như bây giờ đó 🌸🍬",
+"Yeu bé Ty thé nhò💗",
 "Ai lớp diu bibi 🧁💗"
 ];
 
-let finalMessage="Tục tưng bé bỏng của Bin hehe 🐥🎈";
 
+let finalMessage="Tục tưng bé bỏng của Bin hehe 🐥🎈";
 
 let text=document.getElementById("text");
 let index=0;
 
-function typeWriter(message,i,callback,shouldFade=true){
+function typeWriter(message,i,callback){
     if(i<message.length){
         text.innerHTML += message.charAt(i);
         setTimeout(()=>{
-            typeWriter(message,i+1,callback,shouldFade);
+            typeWriter(message,i+1,callback);
         },70);
     }else{
-        if(shouldFade){
-            setTimeout(()=>{
-                fadeOut(callback);
-            },2000);
+        if(callback){
+            setTimeout(()=>{ fadeOut(callback); },2000);
         }
     }
 }
-
 
 function fadeOut(callback){
     let op=1;
@@ -160,19 +220,25 @@ function showNextMessage(){
         typeWriter(messages[index],0,()=>{
             index++;
             showNextMessage();
-        },true);
+        });
     }
     else{
         text.innerHTML="";
         text.style.opacity=1;
-        typeWriter(finalMessage,0,()=>{},false); 
+        typeWriter(finalMessage,0,null);
     }
 }
 
 setTimeout(()=>{
     document.getElementById("heart").style.display="none";
     startStars();
-},6000);
+    startHearts();
+
+    setTimeout(()=>{
+        showNextMessage();
+    },2000);
+
+},7000);
 
 </script>
 
